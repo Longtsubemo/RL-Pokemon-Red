@@ -19,17 +19,17 @@ def commands(pyboy, command):
         pyboy.button('select')
     
 
-def move(pyboy, direction, frames):
+def move(pyboy, direction):
     if direction == 'up':
         #press up
-        pyboy.button('up', frames)
+        pyboy.button('up')
     elif direction == 'down':
         #press down
-        pyboy.button('down', frames)
+        pyboy.button('down')
     elif direction == 'left':
         #press left
-        pyboy.button('left', frames)
+        pyboy.button('left')
     elif direction == 'right':
         #press right
-        pyboy.button('right', frames)
+        pyboy.button('right')
 
