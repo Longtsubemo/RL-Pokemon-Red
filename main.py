@@ -10,15 +10,13 @@ pyboy = PyBoy("roms/Pokemon Red.gb", sound_volume=0)
 pyboy.set_emulation_speed(1) 
 
 gamecontinue(pyboy)
-print(f"x pos = {pyboy.memory[0xD361]}") # x
-print(f"y pos = {pyboy.memory[0xD362]}") # y
-print(f"current map id = {pyboy.memory[0xD35E]}") # current map id
-#gamestart(pyboy)
 
+#gamestart(pyboy)
 
 
 while pyboy.tick():
     playerinfo(pyboy)
+    
     pass
 
 pyboy.stop()
