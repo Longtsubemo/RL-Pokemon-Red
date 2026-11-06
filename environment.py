@@ -13,10 +13,10 @@ class PokemonRedEnv(gym.Env):
         self.pyboy = PyBoy(rom_path, sound_volume=0)
         self.action_space = spaces.Discrete(4, start=0, seed=42)
         self.action_maping = {
-            0: "right",
-            1: "left",
-            2: "down",
-            3: "up"
+            0: "up",
+            1: "down",
+            2: "left",
+            3: "right"
         }
         self.observation_space = spaces.Dict(
             {
@@ -85,17 +85,32 @@ class PokemonRedEnv(gym.Env):
     
 
     def step(self, action):
-        super().step(self.action_maping)
+        button = self.action_maping[action]
+        self.pyboy.button(button, delay=16)
+        self.pyboy.tick(16)
 
+        observation = self.get_obs()
+        reward = 0.0
+        terminated = False
+        truncated = False
+        info = self.get_info()
+
+        return observation, reward, terminated, truncated, info
+    
     def close(self):
         self.close(self.pyboy.stop())
 
 
 env = PokemonRedEnv("roms/Pokemon Red.gb")
 
-observation, info = env.reset(seed=42)
-observation = env.get_obs()
-print(env.observation_space.contains(observation))
-print(observation)
-print(info)
+observation, info = env.reset(seed = 42)
+for i in range(75):
+    action = 1 #env.action_space.sample()
+    observation, reward, terminated, truncated, info = env.step(action)
+    print(f"Action : {env.action_maping[action]}")
+    print("Player :")
+    print(observation["player_state"])
+    print("collision :")
+    print(observation["collision"])
+    print("-------------------------")
 env.pyboy.stop()
