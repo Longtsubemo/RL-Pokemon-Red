@@ -62,21 +62,37 @@ class PokemonRedEnv(gym.Env):
                 )
             }
         )
-    
-    def get_obs(self):
+        self.visited_set = set()
+        self.new_position = False
+        self.total_reward = 0.0
+  
+
+
+    def get_obs(self): # Vision for ai and player_state
         obv = get_observation(self.pyboy)
         return obv
 
-    def get_info(self):
+    def get_info(self): # player position for reward function
+                
         info = {
-            #empty for now
+            "position" : self.position, 
+            "visited count" :len(self.visited_set),
+            "new position?" :self.new_position
         }
         return info
     
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         gamecontinue(self.pyboy)
-
+        self.total_reward = 0.0
+        self.visited_set.clear()
+        self.position = (
+                    self.pyboy.memory[0xD35E], 
+                    self.pyboy.memory[0xD362], 
+                    self.pyboy.memory[0xD361]
+                )
+        self.visited_set.add(self.position)
+        print("New position, +0.1 point")
 
         observation = self.get_obs()
         info = self.get_info()
@@ -88,9 +104,26 @@ class PokemonRedEnv(gym.Env):
         button = self.action_maping[action]
         self.pyboy.button(button, delay=16)
         self.pyboy.tick(16)
-
+        self.position = (
+                    self.pyboy.memory[0xD35E], 
+                    self.pyboy.memory[0xD362], 
+                    self.pyboy.memory[0xD361]
+                )
+        if self.position not in self.visited_set:
+            self.visited_set.add(self.position)
+            reward = 0.01
+            self.total_reward += 0.01
+            self.new_position = True
+            print("New position, +0.01 point")
+            
+        else:
+            reward = -0.001
+            self.total_reward += -0.001
+            self.new_position = False    
+            print("Repeated position, -0.001 point")
+            
+        print("Episode total reward:", self.total_reward)
         observation = self.get_obs()
-        reward = 0.0
         terminated = False
         truncated = False
         info = self.get_info()
@@ -98,19 +131,21 @@ class PokemonRedEnv(gym.Env):
         return observation, reward, terminated, truncated, info
     
     def close(self):
-        self.close(self.pyboy.stop())
+        self.pyboy.stop()
 
 
 env = PokemonRedEnv("roms/Pokemon Red.gb")
 
 observation, info = env.reset(seed = 42)
 for i in range(75):
-    action = 1 #env.action_space.sample()
+    action = env.action_space.sample()
     observation, reward, terminated, truncated, info = env.step(action)
     print(f"Action : {env.action_maping[action]}")
     print("Player :")
     print(observation["player_state"])
+    print("Reward:", reward)
+    print("Info:", info)
     print("collision :")
     print(observation["collision"])
     print("-------------------------")
-env.pyboy.stop()
+env.close()
