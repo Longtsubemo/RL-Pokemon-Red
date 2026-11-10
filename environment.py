@@ -65,7 +65,7 @@ class PokemonRedEnv(gym.Env):
         self.visited_set = set()
         self.new_position = False
         self.total_reward = 0.0
-  
+
 
 
     def get_obs(self): # Vision for ai and player_state
@@ -92,7 +92,7 @@ class PokemonRedEnv(gym.Env):
                     self.pyboy.memory[0xD361]
                 )
         self.visited_set.add(self.position)
-        print("New position, +0.1 point")
+        print("Starting position")
 
         observation = self.get_obs()
         info = self.get_info()
@@ -101,28 +101,43 @@ class PokemonRedEnv(gym.Env):
     
 
     def step(self, action):
+        self.previous_position = (
+                        self.pyboy.memory[0xD35E], 
+                        self.pyboy.memory[0xD362], 
+                        self.pyboy.memory[0xD361]
+                    )
+        print("Before button:", self.previous_position)
+
         button = self.action_maping[action]
         self.pyboy.button(button, delay=16)
-        self.pyboy.tick(16)
+        self.pyboy.tick(32)
         self.position = (
                     self.pyboy.memory[0xD35E], 
                     self.pyboy.memory[0xD362], 
                     self.pyboy.memory[0xD361]
                 )
+        print("After button:", self.position)
+
+        reward = -0.001
+        self.total_reward += -0.001
+        print("Action penalty : -0.001")
+
+        print("compare previous and current: ")
+        print(f"previous : {self.previous_position}")
+        print(f"current : {self.position}")
+
         if self.position not in self.visited_set:
             self.visited_set.add(self.position)
-            reward = 0.01
+            reward += 0.01
             self.total_reward += 0.01
             self.new_position = True
-            print("New position, +0.01 point")
+            print("New Tile :  +0.01 point")
             
         else:
-            reward = -0.001
-            self.total_reward += -0.001
             self.new_position = False    
-            print("Repeated position, -0.001 point")
-            
+
         print("Episode total reward:", self.total_reward)
+
         observation = self.get_obs()
         terminated = False
         truncated = False
@@ -137,7 +152,7 @@ class PokemonRedEnv(gym.Env):
 env = PokemonRedEnv("roms/Pokemon Red.gb")
 
 observation, info = env.reset(seed = 42)
-for i in range(75):
+for i in range(10):
     action = env.action_space.sample()
     observation, reward, terminated, truncated, info = env.step(action)
     print(f"Action : {env.action_maping[action]}")

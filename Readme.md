@@ -97,8 +97,8 @@ These actions allow the agent to begin learning basic navigation.
 - [x] Retrieve player position and facing direction.
 - [x] Define an initial directional action space.
 - [x] Execute actions through the environment.
-- [ ] Improve environment observations.
-- [ ] Design a meaningful reward function.
+- [x] Improve environment observations.
+- [x] Design a meaningful reward function.
 - [ ] Integrate Stable-Baselines3 PPO.
 - [ ] Train the first navigation agent.
 - [ ] Evaluate and improve agent performance.
