@@ -32,33 +32,31 @@ class PokemonRedEnv(gym.Env):
                     shape = (18,20),
                     dtype = np.uint32
                 ),
-                "player_state" : spaces.Dict(
-                    {
-                        "x" : spaces.Box(
-                        low = 0,
-                        high = 255,
-                        shape = (),
-                        dtype = np.uint8
-                        ),
-                        "y": spaces.Box(
-                            low = 0,
-                            high = 255,
-                            shape = (),
-                            dtype = np.uint8
-                        ),
-                        "map_id": spaces.Box(
-                            low = 0,
-                            high = 255,
-                            shape = (),
-                            dtype = np.uint8
-                        ),
-                        "direction": spaces.Box(
-                            low = 0,
-                            high = 255,
-                            shape = (),
-                            dtype = np.uint8
-                        )
-                    }   
+                
+                    
+                "x" : spaces.Box(
+                low = 0,
+                high = 255,
+                shape = (),
+                dtype = np.uint8
+                ),
+                "y": spaces.Box(
+                    low = 0,
+                    high = 255,
+                    shape = (),
+                    dtype = np.uint8
+                ),
+                "map_id": spaces.Box(
+                    low = 0,
+                    high = 255,
+                    shape = (),
+                    dtype = np.uint8
+                ),
+                "direction": spaces.Box(
+                    low = 0,
+                    high = 255,
+                    shape = (),
+                    dtype = np.uint8
                 )
             }
         )
@@ -150,18 +148,15 @@ class PokemonRedEnv(gym.Env):
         self.pyboy.stop()
 
 
-env = PokemonRedEnv("roms/Pokemon Red.gb")
-check_env(env)
-#observation, info = env.reset(seed = 42)
-#for i in range(10):
-#    action = env.action_space.sample()
-#   observation, reward, terminated, truncated, info = env.step(action)
-#    print(f"Action : {env.action_maping[action]}")
-#    print("Player :")
-#    print(observation["player_state"])
-#    print("Reward:", reward)
-#    print("Info:", info)
-#    print("collision :")
-#    print(observation["collision"])
-#    print("-------------------------")
-env.close()
+env1 = PokemonRedEnv("roms/Pokemon Red.gb")
+
+check_env(env1)
+
+#observation1, info1 = env1.reset(seed = 42)
+
+#for i in range(1):
+    
+    #observation1, reward1, terminated1, truncated1, info1 = env1.step(3)
+
+env1.close()
+
