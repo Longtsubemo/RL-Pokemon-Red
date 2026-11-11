@@ -2,8 +2,8 @@ import gymnasium as gym
 import numpy as np
 from pyboy import PyBoy
 from gymnasium import spaces
-from gameinitial import gamecontinue
 from observation import get_observation
+from gymnasium.utils.env_checker import check_env
 
 class PokemonRedEnv(gym.Env):
 
@@ -83,9 +83,11 @@ class PokemonRedEnv(gym.Env):
     
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        gamecontinue(self.pyboy)
+        with open("roms/Pokemon Red.gb.state","rb") as f:
+            self.pyboy.load_state(f)
         self.total_reward = 0.0
         self.visited_set.clear()
+        self.new_position = False
         self.position = (
                     self.pyboy.memory[0xD35E], 
                     self.pyboy.memory[0xD362], 
@@ -96,7 +98,6 @@ class PokemonRedEnv(gym.Env):
 
         observation = self.get_obs()
         info = self.get_info()
-
         return observation, info
     
 
@@ -150,17 +151,17 @@ class PokemonRedEnv(gym.Env):
 
 
 env = PokemonRedEnv("roms/Pokemon Red.gb")
-
-observation, info = env.reset(seed = 42)
-for i in range(10):
-    action = env.action_space.sample()
-    observation, reward, terminated, truncated, info = env.step(action)
-    print(f"Action : {env.action_maping[action]}")
-    print("Player :")
-    print(observation["player_state"])
-    print("Reward:", reward)
-    print("Info:", info)
-    print("collision :")
-    print(observation["collision"])
-    print("-------------------------")
+check_env(env)
+#observation, info = env.reset(seed = 42)
+#for i in range(10):
+#    action = env.action_space.sample()
+#   observation, reward, terminated, truncated, info = env.step(action)
+#    print(f"Action : {env.action_maping[action]}")
+#    print("Player :")
+#    print(observation["player_state"])
+#    print("Reward:", reward)
+#    print("Info:", info)
+#    print("collision :")
+#    print(observation["collision"])
+#    print("-------------------------")
 env.close()
